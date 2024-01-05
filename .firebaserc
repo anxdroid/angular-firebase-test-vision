@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "nonnoapp-39c5d": {
+      "hosting": {
+        "nonnoapp-39c5d": [
+          "nonnoapp-39c5d"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "nonnoapp-39c5d"
+  }
+}
