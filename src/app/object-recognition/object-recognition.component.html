@@ -44,14 +44,24 @@
       </div>
       <div fxFlex="100" fxFlex.gt-sm="20">
         <div fxLayout="row" fxLayoutGap="10px">
+          <!--
           <button
             mat-raised-button
             color="accent"
             [disabled]="image === null"
             (click)="recognizeObjects()"
           >
-            Recognize
+            Recognize Objects
           </button>
+          -->
+          <button
+          mat-raised-button
+          color="accent"
+          [disabled]="image === null"
+          (click)="recognizeText()"
+        >
+          Recognize Text
+        </button>
           <button
             mat-button
             *ngIf="image !== null"
@@ -79,17 +89,24 @@
         </div>
         <ng-template #renderImage>
           <div class="preview__container box--full-width">
-            <img
+            <img #inputImage
               [src]="image"
               alt="Image to recognize"
               class="preview__image"
             />
+            <canvas #outputCanvas
+              style="position:absolute; left: 0px; top: 0px">
+            </canvas>
           </div>
         </ng-template>
       </div>
       <div fxFlex="15"></div>
       <div fxFlex="50" fxFill>
         <h3 class="mat-title">Results</h3>
+        <div style="display: inline-block" *ngFor="let mapEntry of medicalRecords | keyvalue">
+          {{mapEntry.key}} : {{mapEntry.value}}
+        </div>
+<!--
         <div *ngIf="results.length === 0; else renderResults">
           <span class="caption text--grey">No results</span>
         </div>
@@ -102,6 +119,7 @@
             </mat-list-item>
           </mat-list>
         </ng-template>
+-->
       </div>
     </div>
   </div>

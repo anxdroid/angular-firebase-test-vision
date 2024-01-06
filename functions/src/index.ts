@@ -1,4 +1,4 @@
-import {ImageAnnotatorClient} from "@google-cloud/vision";
+import {ImageAnnotatorClient, protos} from "@google-cloud/vision";
 import {https} from "firebase-functions";
 
 type AnnotatePayload = {
@@ -8,6 +8,7 @@ type AnnotatePayload = {
 type LabelDetected = {
   description: string;
   score: number;
+  boundingPoly?: protos.google.cloud.vision.v1.IBoundingPoly | null;
 };
 
 const client = new ImageAnnotatorClient();
@@ -21,7 +22,7 @@ const client = new ImageAnnotatorClient();
 export const annotateImage = https.onCall(
   async (data: AnnotatePayload): Promise<LabelDetected[]> => {
     try {
-      const [{ labelAnnotations }] = await client.labelDetection({
+      const [{labelAnnotations}] = await client.labelDetection({
         image: {
           content: data.image,
         },
@@ -36,6 +37,34 @@ export const annotateImage = https.onCall(
         .map((a) => ({
           description: a.description as string,
           score: a.score ?? 0,
+          boundingPoly: a.boundingPoly,
+        }));
+    } catch (e: unknown) {
+      const error = e as Error;
+      throw new https.HttpsError("internal", error.message);
+    }
+  }
+);
+
+export const recognizeText = https.onCall(
+  async (data: AnnotatePayload): Promise<LabelDetected[]> => {
+    try {
+      const [{textAnnotations}] = await client.textDetection({
+        image: {
+          content: data.image,
+        },
+      });
+
+      if (!textAnnotations || textAnnotations === null) {
+        return [];
+      }
+
+      return textAnnotations
+        .filter((a) => a.description && a.description !== null)
+        .map((a) => ({
+          description: a.description as string,
+          score: a.score ?? 0,
+          boundingPoly: a.boundingPoly,
         }));
     } catch (e: unknown) {
       const error = e as Error;
