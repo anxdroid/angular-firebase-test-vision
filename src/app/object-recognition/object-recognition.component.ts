@@ -106,13 +106,15 @@ export class ObjectRecognitionComponent {
           if (this.cx !== null) {
             this.cx.clearRect(0, 0, this.outputCanvas.nativeElement.width, this.outputCanvas.nativeElement.height);
             let first: boolean = true;
+            let prevHeight: number = -1;
+            let prevVertices: protos.google.cloud.vision.v1.IVertex[] = [];
             for (const result of results) {
                 if (!first && result && result.boundingPoly && result.boundingPoly.vertices) {
                   const vertices = result.boundingPoly.vertices;
-                  const topLeft = vertices[0]
-                  const topRight = vertices[1]
-                  const bottomLeft = vertices[3]
-                  const bottomRight = vertices[2]
+                  let topLeft = vertices[0]
+                  let topRight = vertices[1]
+                  let bottomLeft = vertices[3]
+                  let bottomRight = vertices[2]
                   const width = (topRight.x ?? 0) - (topLeft.x ?? 0);
                   const height = (bottomLeft.y ?? 0) - (topLeft.y ?? 0);
                   console.log(width+"x"+height, vertices);
@@ -120,18 +122,43 @@ export class ObjectRecognitionComponent {
                   this.cx.lineWidth = 2;
                   this.cx.fillStyle = "rgba(199, 87, 231, 0.2)";
                   this.cx.strokeStyle = "#c757e7";
+
+                  const diffHeight = Math.abs(height - prevHeight);
+                  const ratioHeight: number = diffHeight / height;
+                  if (ratioHeight < 0.05) {
+                    console.log(ratioHeight, "Merging !");
+                    topLeft.x = Math.min(topLeft.x ?? 0, prevVertices[0].x ?? 0)
+                    topLeft.y = Math.min(topLeft.y ?? 0, prevVertices[0].y ?? 0)
+                    topRight.x = Math.max(topRight.x ?? 0, prevVertices[1].x ?? 0)
+                    topRight.y = Math.min(topLeft.y ?? 0, prevVertices[1].y ?? 0)
+                    bottomLeft.x = Math.min(bottomLeft.x ?? 0, prevVertices[3].x ?? 0)
+                    bottomLeft.y = Math.max(bottomLeft.y ?? 0, prevVertices[3].y ?? 0)
+                    bottomRight.x = Math.max(bottomRight.x ?? 0, prevVertices[2].x ?? 0)
+                    bottomRight.y = Math.max(bottomRight.y ?? 0, prevVertices[2].y ?? 0)
+                    this.cx.lineWidth = 3;
+                    this.cx.strokeStyle = "#000000";
+                  }else{
+                    prevVertices = vertices;
+                  }
+
                   this.cx.moveTo(topLeft.x ?? 0, topLeft.y ?? 0);
                   this.cx.lineTo(topRight.x ?? 0, topRight.y ?? 0);
                   this.cx.lineTo(bottomRight.x ?? 0, bottomRight.y ?? 0);
                   this.cx.lineTo(bottomLeft.x ?? 0, bottomLeft.y ?? 0);
                   this.cx.lineTo(topLeft.x ?? 0, topLeft.y ?? 0);
 
-                  this.cx.lineTo(bottomRight.x ?? 0, bottomRight.y ?? 0);
-                  this.cx.moveTo(topRight.x ?? 0, topRight.y ?? 0);
-                  this.cx.lineTo(bottomLeft.x ?? 0, bottomLeft.y ?? 0);
+                  //this.cx.lineTo(bottomRight.x ?? 0, bottomRight.y ?? 0);
+                  //this.cx.moveTo(topRight.x ?? 0, topRight.y ?? 0);
+                  //this.cx.lineTo(bottomLeft.x ?? 0, bottomLeft.y ?? 0);
 
                   this.cx.fill();
                   this.cx.stroke();
+
+
+
+                  prevHeight = height;
+
+
                 }
                 first = false;
               }
