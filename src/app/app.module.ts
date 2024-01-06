@@ -25,6 +25,7 @@ import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { ObjectDialogComponent } from './object-dialog/object-dialog.component';
 import { ObjectRecognitionComponent } from './object-recognition/object-recognition.component';
 import { SortConfidencePipe } from './sort-confidence.pipe';
+import { WebcamModule } from 'ngx-webcam';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { SortConfidencePipe } from './sort-confidence.pipe';
     AngularFireModule.initializeApp(environment.firebase),
     provideFirebaseApp(() => initializeApp({"projectId":"nonnoapp-39c5d","appId":"1:998628285176:web:2c689cdf5d8d9f007ab90d","storageBucket":"nonnoapp-39c5d.appspot.com","apiKey":"AIzaSyBGH0u6Rcw9Uuln4mHS2dyA-MWYlb7mbmQ","authDomain":"nonnoapp-39c5d.firebaseapp.com","messagingSenderId":"998628285176"})),
     //provideFunctions(() => getFunctions()),
-    AngularFireFunctionsModule
+    AngularFireFunctionsModule,
+    WebcamModule
   ],
   providers: [
     provideClientHydration(),

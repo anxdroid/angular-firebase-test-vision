@@ -82,7 +82,29 @@
       fxLayoutAlign.gt-sm="start center"
       fxLayoutGap="15px"
     >
-      <div fxFlex>
+
+    <div fxFlex>
+      <div style="text-align:center">
+        <div>
+          <webcam [height]="500" [width]="500" [trigger]="triggerObservable" (imageCapture)="handleImage($event)" *ngIf="showWebcam"
+           [allowCameraSwitch]="allowCameraSwitch" [switchCamera]="nextWebcamObservable" [videoOptions]="videoOptions" (cameraSwitched)="cameraWasSwitched($event)"
+           (initError)="handleInitError($event)"></webcam>
+          <br/>
+          <button
+          mat-button
+          (click)="triggerSnapshot()">
+          Scatta
+          </button>
+          <button
+          mat-button
+          (click)="showNextWebcam(true)">
+          Cambia
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div fxFlex>
         <h3 class="mat-title">Preview</h3>
         <div *ngIf="image === null; else renderImage">
           <span class="caption text--grey">No image selected</span>
@@ -103,10 +125,11 @@
       <div fxFlex="15"></div>
       <div fxFlex="50" fxFill>
         <h3 class="mat-title">Results</h3>
+        {{results[0] | json}}
         <div style="display: inline-block" *ngFor="let mapEntry of medicalRecords | keyvalue">
           {{mapEntry.key}} : {{mapEntry.value}}
         </div>
-<!--
+        <!--
         <div *ngIf="results.length === 0; else renderResults">
           <span class="caption text--grey">No results</span>
         </div>
@@ -119,7 +142,7 @@
             </mat-list-item>
           </mat-list>
         </ng-template>
--->
+        -->
       </div>
     </div>
   </div>
